@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KMITL GPA Simulator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-graduation-cap"></i> KMITL GPA Simulator</h1>
+            <p>Made with 🤍 for KMITL students</p>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="overlay" id="overlay"></div>
+
+    <div class="mobile-sidebar" id="mobile-sidebar">
+        <div class="mobile-tabs">
+            <button class="mobile-tab-button active" data-tab="calculator">GPA Calculator</button>
+            <button class="mobile-tab-button" data-tab="planner">Goal Planner</button>
+            <button class="mobile-tab-button" data-tab="simulator">What-If Simulator</button>
+            <button class="mobile-tab-button" data-tab="about">About</button>
+        </div>
+    </div>
+
+    <main class="container">
+        <div class="tabs">
+            <button class="tab-button active" data-tab="calculator">GPA Calculator</button>
+            <button class="tab-button" data-tab="planner">Goal Planner</button>
+            <button class="tab-button" data-tab="simulator">What-If Simulator</button>
+            <button class="tab-button" data-tab="about">About</button>
+        </div>
+
+        <div class="tab-content">
+            <!-- GPA Calculator Tab -->
+            <div id="calculator" class="tab-pane active">
+                <div class="card">
+                    <h2>Current GPA Calculator</h2>
+                    <p>Enter your courses to calculate your current GPA.</p>
+                    
+                    <div class="course-list" id="calculator-courses">
+                        <!-- Course entries will be added here -->
+                        <div class="course-entry">
+                            <select class="grade-select">
+                                <option value="A">A</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="F">F</option>
+                                <option value="I">I (Incomplete)</option>
+                                <option value="S">S (Satisfied)</option>
+                                <option value="U">U (Unsatisfied)</option>
+                                <option value="T">T (Transfer)</option>
+                            </select>
+                            <input type="number" class="credit-input" placeholder="Credits" min="1" value="3">
+                            <button class="remove-course"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                    
+                    <button id="add-calculator-course" class="btn-secondary">
+                        <i class="fas fa-plus"></i> Add Course
+                    </button>
+                    
+                    <button id="calculate-gpa" class="btn-primary">
+                        Calculate GPA
+                    </button>
+                    
+                    <div id="calculator-result" class="result-box hidden">
+                        <!-- Results will be shown here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Goal Planner Tab -->
+            <div id="planner" class="tab-pane">
+                <div class="card">
+                    <h2>GPA Goal Planner</h2>
+                    <p>Find out what grades you need to reach your target GPA.</p>
+                    
+                    <div class="form-group">
+                        <label for="current-gpa">Current GPA:</label>
+                        <input type="number" id="current-gpa" step="0.01" min="0" max="4" value="3.0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="credits-completed">Credits Completed (affecting GPA):</label>
+                        <input type="number" id="credits-completed" min="0" value="60">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="remaining-credits">Remaining Credits:</label>
+                        <input type="number" id="remaining-credits" min="1" value="70">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="target-gpa">Target GPA:</label>
+                        <input type="number" id="target-gpa" step="0.01" min="0" max="4" value="3.5">
+                    </div>
+                    
+                    <button id="plan-gpa" class="btn-primary">
+                        Calculate Required Grades
+                    </button>
+                    
+                    <div id="planner-result" class="result-box hidden">
+                        <!-- Results will be shown here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- What-If Simulator Tab -->
+            <div id="simulator" class="tab-pane">
+                <div class="card">
+                    <h2>What-If GPA Simulator</h2>
+                    <p>Simulate how future courses will affect your GPA.</p>
+                    
+                    <div class="form-group">
+                        <label for="calculation-type">Calculation Type:</label>
+                        <select id="calculation-type" class="form-control">
+                            <option value="cumulative">Cumulative GPA (Show effect on overall GPA)</option>
+                            <option value="term">Term GPA (Calculate this semester/term only)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sim-current-gpa">Current GPA:</label>
+                        <input type="number" id="sim-current-gpa" step="0.01" min="0" max="4" value="3.0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sim-credits-completed">Credits Completed (affecting GPA):</label>
+                        <input type="number" id="sim-credits-completed" min="0" value="60">
+                    </div>
+                    
+                    <h3>Future Courses</h3>
+                    <div class="course-list" id="simulator-courses">
+                        <!-- Future course entries will be added here -->
+                        <div class="course-entry">
+                            <select class="grade-select">
+                                <option value="A">A</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="F">F</option>
+                                <option value="I">I (Incomplete)</option>
+                                <option value="S">S (Satisfied)</option>
+                                <option value="U">U (Unsatisfied)</option>
+                                <option value="T">T (Transfer)</option>
+                            </select>
+                            <input type="number" class="credit-input" placeholder="Credits" min="1" value="3">
+                            <button class="remove-course"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                    
+                    <button id="add-simulator-course" class="btn-secondary">
+                        <i class="fas fa-plus"></i> Add Course
+                    </button>
+                    
+                    <button id="simulate-gpa" class="btn-primary">
+                        Simulate Future GPA
+                    </button>
+                    
+                    <div id="simulator-result" class="result-box hidden">
+                        <!-- Results will be shown here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <!-- About Tab -->
+            <div id="about" class="tab-pane">
+                <div class="card">
+                    <h2>About KMITL GPA Simulator</h2>
+                    <p>This tool helps KMITL students visualize their academic path, make smarter decisions earlier, and avoid GPA surprises near graduation.</p>
+                    
+                    <div class="section-container">
+                        <h3>KMITL Grading Scale</h3>
+                        <div class="grading-table-container">
+                            <table class="grading-table">
+                                <thead>
+                                    <tr>
+                                        <th>Grade</th>
+                                        <th>Grade Points</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>A</td>
+                                        <td>4.0</td>
+                                        <td>Excellent</td>
+                                    </tr>
+                                    <tr>
+                                        <td>B+</td>
+                                        <td>3.5</td>
+                                        <td>Very Good</td>
+                                    </tr>
+                                    <tr>
+                                        <td>B</td>
+                                        <td>3.0</td>
+                                        <td>Good</td>
+                                    </tr>
+                                    <tr>
+                                        <td>C+</td>
+                                        <td>2.5</td>
+                                        <td>Fairly Good</td>
+                                    </tr>
+                                    <tr>
+                                        <td>C</td>
+                                        <td>2.0</td>
+                                        <td>Fair</td>
+                                    </tr>
+                                    <tr>
+                                        <td>D+</td>
+                                        <td>1.5</td>
+                                        <td>Poor</td>
+                                    </tr>
+                                    <tr>
+                                        <td>D</td>
+                                        <td>1.0</td>
+                                        <td>Very Poor</td>
+                                    </tr>
+                                    <tr>
+                                        <td>F</td>
+                                        <td>0.0</td>
+                                        <td>Fail</td>
+                                    </tr>
+                                    <tr>
+                                        <td>I</td>
+                                        <td>-</td>
+                                        <td>Incomplete - no grade points, no credit</td>
+                                    </tr>
+                                    <tr>
+                                        <td>S</td>
+                                        <td>-</td>
+                                        <td>Satisfied - no grade points, but has credit</td>
+                                    </tr>
+                                    <tr>
+                                        <td>U</td>
+                                        <td>-</td>
+                                        <td>Unsatisfied - no grade points, no credit (like fail)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>T</td>
+                                        <td>-</td>
+                                        <td>Transfer - no grade points, but has credit</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section-container">
+                        <h3>How to Use This App</h3>
+                        <div class="feature-container">
+                            <div class="feature">
+                                <div class="feature-icon">
+                                    <i class="fas fa-calculator"></i>
+                                </div>
+                                <div class="feature-content">
+                                    <h4>GPA Calculator</h4>
+                                    <p>Enter your current courses with grades and credits to calculate your current GPA.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="feature">
+                                <div class="feature-icon">
+                                    <i class="fas fa-bullseye"></i>
+                                </div>
+                                <div class="feature-content">
+                                    <h4>Goal Planner</h4>
+                                    <p>Set a target GPA and see what grades you need to achieve it, including whether your goal is feasible.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="feature">
+                                <div class="feature-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="feature-content">
+                                    <h4>What-If Simulator</h4>
+                                    <p>Simulate how future course grades will affect your GPA, with options to calculate term GPA or cumulative GPA.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="section-container">
+                        <h3>GPA Formula</h3>
+                        <div class="formula-container">
+                            <p>GPA = (Sum of Grade Points × Credit Hours) ÷ Total Credit Hours</p>
+                            <p class="formula-note">Note: Only letter grades (A, B+, B, C+, C, D+, D, F) count toward GPA calculation. S and T grades earn credits but don't affect GPA.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="section-container">
+                        <h3>About This GPA Simulator</h3>
+                        <p>This GPA Simulator was created to help KMITL students plan their academic journey, set realistic GPA goals, and understand how different grade combinations affect their overall GPA.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <footer>
+        <div class="container">
+            <p>Many students only realize how GPA mechanics work when it’s too late.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
