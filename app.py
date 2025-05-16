@@ -239,8 +239,7 @@ def what_if_simulator():
             "futureNonGpaCredits": future_non_gpa_credits,
             "totalEarnedCredits": total_earned_credits
         })
-
-import os
+import os 
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
