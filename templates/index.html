@@ -63,7 +63,7 @@
                                 <option value="U">U (Unsatisfied)</option>
                                 <option value="T">T (Transfer)</option>
                             </select>
-                            <input type="number" class="credit-input" placeholder="Credits" min="1" value="3">
+                            <input type="number" class="credit-input" placeholder="Credits" min="0" max="4" value="3">
                             <button class="remove-course"><i class="fas fa-times"></i></button>
                         </div>
                     </div>
@@ -90,7 +90,7 @@
                     
                     <div class="form-group">
                         <label for="current-gpa">Current GPA:</label>
-                        <input type="number" id="current-gpa" step="0.01" min="0" max="4" value="3.0">
+                        <input type="number" id="current-gpa" step="0.01" min="0" max="4.0" value="3.0">
                     </div>
                     
                     <div class="form-group">
@@ -99,13 +99,13 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="remaining-credits">Remaining Credits:</label>
-                        <input type="number" id="remaining-credits" min="1" value="70">
+                        <label for="total-credits">Total Credits Required for Graduation:</label>
+                        <input type="number" id="total-credits" min="1" value="130">
                     </div>
                     
                     <div class="form-group">
                         <label for="target-gpa">Target GPA:</label>
-                        <input type="number" id="target-gpa" step="0.01" min="0" max="4" value="3.5">
+                        <input type="number" id="target-gpa" step="0.01" min="0" max="4.0" value="3.5">
                     </div>
                     
                     <button id="plan-gpa" class="btn-primary">
@@ -134,7 +134,7 @@
                     
                     <div class="form-group">
                         <label for="sim-current-gpa">Current GPA:</label>
-                        <input type="number" id="sim-current-gpa" step="0.01" min="0" max="4" value="3.0">
+                        <input type="number" id="sim-current-gpa" step="0.01" min="0" max="4.0" value="3.0">
                     </div>
                     
                     <div class="form-group">
@@ -160,7 +160,7 @@
                                 <option value="U">U (Unsatisfied)</option>
                                 <option value="T">T (Transfer)</option>
                             </select>
-                            <input type="number" class="credit-input" placeholder="Credits" min="1" value="3">
+                            <input type="number" class="credit-input" placeholder="Credits" min="0" max="4" value="3">
                             <button class="remove-course"><i class="fas fa-times"></i></button>
                         </div>
                     </div>
@@ -178,7 +178,6 @@
                     </div>
                 </div>
             </div>
-        </div>
 
             <!-- About Tab -->
             <div id="about" class="tab-pane">
@@ -310,16 +309,79 @@
                         <h3>About This GPA Simulator</h3>
                         <p>This GPA Simulator was created to help KMITL students plan their academic journey, set realistic GPA goals, and understand how different grade combinations affect their overall GPA.</p>
                     </div>
+
+                    <div class="attribution">
+                        <p>Made with ❤️ by Phyo Thi Khaing</p>
+                        <p class="timestamp">Created May 2025 | <span class="late-night-message">Built this app... right after my GPA collapsed!</span></p>
+                    </div>
                 </div>
             </div>
         </div>
+    </main>
 
     <footer>
         <div class="container">
-            <p>Many students only realize how GPA mechanics work when it’s too late.</p>
+            <p>Many students only realize how GPA mechanics work when it's too late.</p>
         </div>
     </footer>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+    // Inline script to ensure validation happens as soon as possible
+    // This prevents users from entering invalid values even before the main script loads
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // GPA input validation - enforce min 0, max 4.0
+        const gpaInputs = document.querySelectorAll('input[type="number"][max="4.0"]');
+        gpaInputs.forEach(function(input) {
+            input.addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                if (!isNaN(value)) {
+                    if (value > 4.0) this.value = 4.0;
+                    if (value < 0) this.value = 0;
+                }
+            });
+        });
+        
+        // Credit input validation - enforce min 0, max 4
+        const creditInputs = document.querySelectorAll('.credit-input');
+        creditInputs.forEach(function(input) {
+            input.addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                if (!isNaN(value)) {
+                    if (value > 4) this.value = 4;
+                    if (value < 0) this.value = 0;
+                    // Force integer values for credits
+                    if (value !== Math.floor(value)) {
+                        this.value = Math.floor(value);
+                    }
+                }
+            });
+        });
+        
+        // Add validation for dynamically added credit inputs
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('#add-calculator-course') || e.target.closest('#add-simulator-course')) {
+                setTimeout(function() {
+                    const newCreditInputs = document.querySelectorAll('.credit-input:not(.validated)');
+                    newCreditInputs.forEach(function(input) {
+                        input.addEventListener('input', function() {
+                            const value = parseFloat(this.value);
+                            if (!isNaN(value)) {
+                                if (value > 4) this.value = 4;
+                                if (value < 0) this.value = 0;
+                                // Force integer values for credits
+                                if (value !== Math.floor(value)) {
+                                    this.value = Math.floor(value);
+                                }
+                            }
+                        });
+                        input.classList.add('validated');
+                    });
+                }, 100);
+            }
+        });
+    });
+</script>
 </body>
 </html>

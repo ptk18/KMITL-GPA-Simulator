@@ -65,6 +65,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (mobileButton) mobileButton.classList.add('active');
         if (pane) pane.classList.add('active');
         
+        // Special handling for About tab
+        if (tabId === 'about') {
+            checkLateNight();
+        }
+        
         // Close mobile sidebar after tab selection
         if (mobileSidebar) {
             mobileSidebar.classList.remove('open');
@@ -72,6 +77,19 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (overlay) {
             overlay.style.display = 'none';
+        }
+    }
+    
+    // Late night message
+    function checkLateNight() {
+        const hour = new Date().getHours();
+        const lateNightMessage = document.querySelector('.late-night-message');
+        if (lateNightMessage) {
+            if (hour >= 22 || hour < 6) {
+                lateNightMessage.style.display = 'inline';
+            } else {
+                lateNightMessage.style.display = 'none';
+            }
         }
     }
     
@@ -237,11 +255,19 @@ document.addEventListener('DOMContentLoaded', function() {
         planGpaBtn.addEventListener('click', async function() {
             const currentGpa = parseFloat(document.getElementById('current-gpa').value);
             const creditsCompleted = parseInt(document.getElementById('credits-completed').value);
-            const remainingCredits = parseInt(document.getElementById('remaining-credits').value);
+            const totalCredits = parseInt(document.getElementById('total-credits').value);
             const targetGpa = parseFloat(document.getElementById('target-gpa').value);
             
-            if (isNaN(currentGpa) || isNaN(creditsCompleted) || isNaN(remainingCredits) || isNaN(targetGpa)) {
+            // Calculate remaining credits
+            const remainingCredits = totalCredits - creditsCompleted;
+            
+            if (isNaN(currentGpa) || isNaN(creditsCompleted) || isNaN(totalCredits) || isNaN(targetGpa)) {
                 alert('Please enter valid numbers in all fields.');
+                return;
+            }
+            
+            if (remainingCredits <= 0) {
+                alert('Total credits must be greater than credits completed.');
                 return;
             }
             
@@ -283,7 +309,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <strong>Feasibility:</strong> ${data.feasibility}
                             ${
                                 isPossible 
-                                    ? `<p>You need to maintain an average of <strong>${data.requiredGpa.toFixed(2)}</strong> in your remaining courses.</p>` 
+                                    ? `<p>You need to maintain an average of <strong>${data.requiredGpa.toFixed(2)}</strong> in your remaining ${remainingCredits} credits.</p>` 
                                     : `<p>Your target GPA is not mathematically possible with regular credits.</p>`
                             }
                         </div>
@@ -467,4 +493,114 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Input validation for numeric fields
+document.addEventListener('DOMContentLoaded', function() {
+    // Add validation for all numeric inputs
+    const numericInputs = document.querySelectorAll('input[type="number"]');
+    
+    numericInputs.forEach(function(input) {
+        // Validate on input change
+        input.addEventListener('input', function() {
+            validateInput(this);
+        });
+        
+        // Validate on blur (when user leaves the field)
+        input.addEventListener('blur', function() {
+            validateInput(this);
+        });
+        
+        // Initial validation
+        validateInput(input);
+    });
+    
+    // Validate dynamically added inputs (for courses)
+    document.addEventListener('click', function(e) {
+        if (e.target.id === 'add-calculator-course' || e.target.id === 'add-simulator-course') {
+            // Wait for the DOM to update
+            setTimeout(function() {
+                const newInputs = document.querySelectorAll('.credit-input:not(.validated)');
+                newInputs.forEach(function(input) {
+                    input.addEventListener('input', function() {
+                        validateInput(this);
+                    });
+                    
+                    input.addEventListener('blur', function() {
+                        validateInput(this);
+                    });
+                    
+                    input.classList.add('validated');
+                    validateInput(input);
+                });
+            }, 100);
+        }
+    });
+    
+    // Validation function
+    function validateInput(input) {
+        const min = parseFloat(input.getAttribute('min') || 0);
+        const max = parseFloat(input.getAttribute('max') || Infinity);
+        const value = parseFloat(input.value);
+        
+        // Clear previous validation state
+        input.classList.remove('invalid');
+        input.classList.remove('valid');
+        
+        // Check if empty
+        if (input.value === '') {
+            return; // Skip validation for empty fields
+        }
+        
+        // Check if not a number
+        if (isNaN(value)) {
+            input.classList.add('invalid');
+            input.title = 'Please enter a valid number';
+            return;
+        }
+        
+        // Check min value
+        if (value < min) {
+            input.value = min;
+            input.classList.add('valid');
+            return;
+        }
+        
+        // Check max value
+        if (value > max) {
+            input.value = max;
+            input.classList.add('valid');
+            return;
+        }
+        
+        // For GPA fields specifically
+        if (input.id.includes('gpa') && !isNaN(value)) {
+            // Ensure we don't exceed 4.0
+            if (value > 4.0) {
+                input.value = 4.0;
+            }
+            
+            // Format to 2 decimal places for display if needed
+            if (input.value.indexOf('.') !== -1 && input.value.split('.')[1].length > 2) {
+                input.value = parseFloat(input.value).toFixed(2);
+            }
+        }
+        
+        // For credit inputs in course lists
+        if (input.classList.contains('credit-input')) {
+            // Ensure we only use integers for credits
+            if (value !== Math.floor(value)) {
+                input.value = Math.floor(value);
+            }
+            
+            // Ensure max is 4 and min is 0
+            if (value > 4) {
+                input.value = 4;
+            } else if (value < 0) {
+                input.value = 0;
+            }
+        }
+        
+        input.classList.add('valid');
+    }
+});
 });
