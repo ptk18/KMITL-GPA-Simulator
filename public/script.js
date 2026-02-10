@@ -277,47 +277,68 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Table data - no Course ID, just name, credits, grade
             const tableData = courses.map(function(course) {
+                // Remove course ID prefix (8-digit number at start) if present
+                const nameWithoutId = course.name.replace(/^\d{8}\s*/, '');
                 return [
-                    course.name.toUpperCase(),
+                    nameWithoutId,
                     course.credits,
                     course.grade
                 ];
             });
 
+            // Calculate table width based on columns
+            const tableWidth = 160;
+            const tableStartX = (210 - tableWidth) / 2; // Center on A4 page
+
             // Add table using autoTable
             doc.autoTable({
+                head: [['Course Name', 'Credits', 'Grade']],
                 body: tableData,
                 startY: 20,
                 theme: 'plain',
+                margin: { left: tableStartX },
                 styles: {
                     fontSize: 11,
-                    cellPadding: 5,
+                    cellPadding: 2,
                     lineColor: [0, 0, 0],
-                    lineWidth: 0.2,
+                    lineWidth: 0,
                     textColor: [0, 0, 0],
                 },
+                headStyles: {
+                    fontStyle: 'bold',
+                    halign: 'center',
+                },
                 columnStyles: {
-                    0: { cellWidth: 120 },
+                    0: { cellWidth: 110 },
                     1: { cellWidth: 25, halign: 'center' },
                     2: { cellWidth: 25, halign: 'center' }
                 },
-                tableLineColor: [0, 0, 0],
-                tableLineWidth: 0.2,
+                didDrawCell: function(data) {
+                    // Draw line under header row
+                    if (data.section === 'head' && data.column.index === 2) {
+                        doc.setLineWidth(0.3);
+                        doc.line(tableStartX, data.cell.y + data.cell.height, tableStartX + tableWidth, data.cell.y + data.cell.height);
+                    }
+                    // Draw vertical column borders
+                    if (data.column.index < 2) {
+                        doc.setLineWidth(0.3);
+                        const x = data.cell.x + data.cell.width;
+                        doc.line(x, data.cell.y, x, data.cell.y + data.cell.height);
+                    }
+                },
             });
 
             // Draw border around the table
             const tableStartY = 20;
             const tableEndY = doc.lastAutoTable.finalY;
-            const tableWidth = 170;
-            const tableStartX = 14;
             doc.setLineWidth(0.3);
             doc.rect(tableStartX, tableStartY, tableWidth, tableEndY - tableStartY);
 
             // Add GPA summary below table - bold italic, centered
-            const finalY = doc.lastAutoTable.finalY + 12;
+            const finalY = doc.lastAutoTable.finalY + 10;
             doc.setFontSize(12);
             doc.setFont('times', 'bolditalic');
-            doc.text(`GPA : ${gpa.toFixed(2)}        Total Credits : ${totalAllCredits}`, 14 + (170 / 2), finalY, { align: 'center' });
+            doc.text(`GPA : ${gpa.toFixed(2)}        Total Credits : ${totalAllCredits}`, tableStartX + (tableWidth / 2), finalY, { align: 'center' });
 
             // Save the PDF
             doc.save('gpa-report.pdf');

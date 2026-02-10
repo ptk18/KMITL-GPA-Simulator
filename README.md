@@ -61,4 +61,4 @@ wrangler pages deploy public
 
 ## Author
 
-Developed by [Phyo Thi Khaing](https://www.linkedin.com/in/phyothikhaing1829/)
+Developed by Phyo Thi Khaing
