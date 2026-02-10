@@ -26,6 +26,30 @@ footer {
     box-sizing: border-box;
 }
 
+/* Placeholder Styling */
+::placeholder {
+    color: #aaa;
+    opacity: 1;
+}
+
+::-webkit-input-placeholder {
+    color: #aaa;
+}
+
+::-moz-placeholder {
+    color: #aaa;
+    opacity: 1;
+}
+
+:-ms-input-placeholder {
+    color: #aaa;
+}
+
+/* Future Courses Label - Orange Theme */
+.future-courses-label {
+    color: var(--primary-color) !important;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
@@ -147,6 +171,16 @@ select {
     transition: var(--transition);
 }
 
+.form-group select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23555' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+}
+
 input[type="number"]:focus,
 select:focus {
     border-color: var(--primary-color);
@@ -200,26 +234,48 @@ select:focus {
 
 .course-entry {
     display: flex;
-    margin-bottom: 10px;
-    align-items: center;
+    margin-bottom: 15px;
+    align-items: flex-end;
+    gap: 15px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: var(--border-radius);
+}
+
+.course-entry .input-group {
+    margin-bottom: 0;
+}
+
+.course-entry .input-group label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
 }
 
 .course-entry select {
-    flex: 1;
-    margin-right: 10px;
-}
-
-.course-entry input {
-    width: 80px;
-    margin-right: 10px;
-}
-
-.remove-course {
-    background-color: #f8f9fa;
+    width: 120px;
+    padding: 11px 10px;
     border: 1px solid #ddd;
     border-radius: var(--border-radius);
-    width: 36px;
-    height: 36px;
+    font-size: 1rem;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23555' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+    background-color: #fff;
+}
+
+.course-entry .credit-input {
+    width: 80px;
+    margin-right: 0;
+}
+
+.course-entry .remove-course {
+    height: 42px;
+    padding: 0 14px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -227,10 +283,7 @@ select:focus {
     transition: var(--transition);
 }
 
-.remove-course:hover {
-    background-color: #f1f3f5;
-    color: var(--danger-color);
-}
+/* remove-course hover is handled by btn-delete styles */
 
 /* Result Box */
 .result-box {
@@ -260,6 +313,341 @@ select:focus {
 
 .hidden {
     display: none;
+}
+
+/* Instructions */
+.instructions {
+    margin-bottom: 20px;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.instructions p {
+    margin-bottom: 5px;
+}
+
+/* Course Input Row */
+.course-input-row {
+    display: flex;
+    gap: 15px;
+    align-items: flex-end;
+    margin-bottom: 25px;
+    width: 100%;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group:first-child {
+    flex: 1;
+}
+
+.input-group label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.input-group input,
+.input-group select {
+    padding: 11px 10px;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+}
+
+.input-group input[type="text"] {
+    width: 100%;
+}
+
+.input-group input[type="number"] {
+    width: 100px;
+    text-align: center;
+    font-size: 1.1rem;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    appearance: none;
+}
+
+/* Custom number input wrapper */
+.number-input-wrapper {
+    display: flex;
+    align-items: stretch;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    height: 42px;
+    width: 120px;
+}
+
+.number-input-wrapper:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(243, 112, 33, 0.15);
+}
+
+.number-input-wrapper input {
+    border: none !important;
+    border-radius: 0 !important;
+    flex: 1;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 500;
+    background: transparent;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    appearance: none;
+}
+
+.number-input-wrapper input::-webkit-outer-spin-button,
+.number-input-wrapper input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    display: none;
+}
+
+.number-input-wrapper input:focus {
+    outline: none;
+    box-shadow: none !important;
+}
+
+.number-input-wrapper .spinner-buttons {
+    display: flex;
+    flex-direction: column;
+    width: 24px;
+}
+
+.number-input-wrapper .spinner-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: #555;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+}
+
+.number-input-wrapper .spinner-btn svg {
+    width: 8px;
+    height: 8px;
+}
+
+.number-input-wrapper .spinner-btn:hover {
+    background: #f0f0f0;
+    color: var(--primary-color);
+}
+
+.number-input-wrapper .spinner-btn:active {
+    background: #e5e5e5;
+}
+
+.input-group select {
+    width: 120px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23555' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+}
+
+.btn-add {
+    padding: 12px 25px;
+    background-color: #3d9970;
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    min-width: 90px;
+}
+
+.btn-add:hover {
+    background-color: #2d7a5a;
+}
+
+.btn-add.btn-update {
+    background-color: #ff9f43;
+}
+
+.btn-add.btn-update:hover {
+    background-color: #e68a2e;
+}
+
+/* Courses Table */
+.courses-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.courses-table th,
+.courses-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+.courses-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    border-bottom: 2px solid #ddd;
+}
+
+.courses-table td.text-center,
+.courses-table th.text-center {
+    text-align: center;
+}
+
+.courses-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Action Buttons */
+.btn-edit {
+    padding: 6px 14px;
+    background-color: #ff9f43;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-right: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-edit:hover {
+    background-color: #e68a2e;
+}
+
+.btn-save {
+    padding: 6px 14px;
+    background-color: #51cf66;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-right: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-save:hover {
+    background-color: #40c057;
+}
+
+.btn-delete {
+    padding: 6px 14px;
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-delete:hover {
+    background-color: #fa5252;
+}
+
+.btn-cancel {
+    padding: 6px 14px;
+    background-color: #868e96;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+    background-color: #6c757d;
+}
+
+/* Edit inputs in table */
+.courses-table .edit-name {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.courses-table .edit-credits {
+    width: 60px;
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.courses-table .edit-grade {
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* GPA Summary */
+.gpa-summary {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: var(--border-radius);
+    font-size: 1.1rem;
+}
+
+/* GPA Action Buttons */
+.gpa-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.btn-export,
+.btn-clear {
+    padding: 10px 24px;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-export {
+    background-color: #4a90d9;
+    color: white;
+}
+
+.btn-export:hover {
+    background-color: #3a7bc8;
+}
+
+.btn-clear {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-clear:hover {
+    background-color: #c82333;
 }
 
 /* GPA Display */
@@ -603,23 +991,122 @@ input[type="number"]::-webkit-outer-spin-button {
     
     .course-entry {
         flex-wrap: wrap;
+        gap: 10px;
+        padding: 12px;
     }
-    
-    .course-entry select {
-        flex: 1 0 100%;
-        margin-bottom: 10px;
-        margin-right: 0;
-    }
-    
-    .course-entry input {
+
+    .course-entry .input-group {
         flex: 1;
-        margin-right: 10px;
+        min-width: 100px;
     }
-    
+
+    .course-entry select {
+        width: 100%;
+    }
+
     .btn-primary,
     .btn-secondary {
         width: 100%;
         margin-right: 0;
         margin-bottom: 10px;
     }
+
+    /* Course Input Row Mobile */
+    .course-input-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .input-group {
+        width: 100%;
+    }
+
+    .input-group input[type="text"],
+    .input-group input[type="number"],
+    .input-group select {
+        width: 100%;
+    }
+
+    .btn-add {
+        width: 100%;
+    }
+
+    /* Courses Table Mobile */
+    .courses-table th,
+    .courses-table td {
+        padding: 8px 10px;
+        font-size: 0.9rem;
+    }
+
+    .btn-edit,
+    .btn-delete,
+    .btn-save,
+    .btn-cancel {
+        padding: 5px 8px;
+        font-size: 0.75rem;
+    }
+
+    .gpa-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn-export,
+    .btn-clear {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Simplified Simulator Results */
+.gpa-change-text {
+    text-align: center;
+    color: #666;
+    margin: 10px 0 20px;
+    font-size: 0.95rem;
+}
+
+.gpa-change-text.positive {
+    color: #28a745;
+}
+
+.gpa-change-text.negative {
+    color: #dc3545;
+}
+
+.gpa-change-text.neutral {
+    color: #666;
+}
+
+.result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 1.05rem;
+}
+
+.result-row:last-of-type {
+    border-bottom: none;
+}
+
+.result-row strong {
+    font-size: 1.3rem;
+    color: var(--primary-color);
+}
+
+.summary-info,
+.credits-summary {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.summary-info p,
+.credits-summary p {
+    margin: 5px 0;
+    color: #555;
 }

@@ -10,21 +10,42 @@ document.addEventListener('DOMContentLoaded', function() {
     const mobileSidebar = document.getElementById('mobile-sidebar');
     const overlay = document.getElementById('overlay');
 
-    // Course Management
-    const addCalculatorCourseBtn = document.getElementById('add-calculator-course');
+    // Course Management - New Calculator
+    const addCourseBtn = document.getElementById('add-course-btn');
+    const inputCourseName = document.getElementById('input-course-name');
+    const inputCredits = document.getElementById('input-credits');
+    const inputGrade = document.getElementById('input-grade');
+    const coursesTbody = document.getElementById('courses-tbody');
+    const coursesTableContainer = document.getElementById('courses-table-container');
+    const gpaSummary = document.getElementById('gpa-summary');
+    const gpaValue = document.getElementById('gpa-value');
+    const creditsValue = document.getElementById('credits-value');
+    const gpaActions = document.getElementById('gpa-actions');
+    const exportPdfBtn = document.getElementById('export-pdf-btn');
+    const clearCoursesBtn = document.getElementById('clear-courses-btn');
+
+    // Simulator Course Management
     const addSimulatorCourseBtn = document.getElementById('add-simulator-course');
-    const calculatorCoursesList = document.getElementById('calculator-courses');
-    const simulatorCoursesList = document.getElementById('simulator-courses');
+    const simCourseName = document.getElementById('sim-course-name');
+    const simCredits = document.getElementById('sim-credits');
+    const simGrade = document.getElementById('sim-grade');
+    const simCoursesTableContainer = document.getElementById('sim-courses-table-container');
+    const simCoursesTbody = document.getElementById('sim-courses-tbody');
 
     // Form Buttons
-    const calculateGpaBtn = document.getElementById('calculate-gpa');
     const planGpaBtn = document.getElementById('plan-gpa');
     const simulateGpaBtn = document.getElementById('simulate-gpa');
 
     // Result Containers
-    const calculatorResult = document.getElementById('calculator-result');
     const plannerResult = document.getElementById('planner-result');
     const simulatorResult = document.getElementById('simulator-result');
+
+    // Courses data storage
+    let courses = [];
+    let editingIndex = null; // Track which course is being edited
+
+    // Simulator courses data storage
+    let simulatorCourses = [];
     
     // Mobile Menu Toggle
     if (mobileMenuToggle) {
@@ -106,149 +127,341 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Course Management
-    function createCourseEntry() {
-        const courseEntry = document.createElement('div');
-        courseEntry.className = 'course-entry';
-        
-        const gradeSelect = document.createElement('select');
-        gradeSelect.className = 'grade-select';
-        
-        const grades = [
-            { value: 'A', text: 'A' },
-            { value: 'B+', text: 'B+' },
-            { value: 'B', text: 'B' },
-            { value: 'C+', text: 'C+' },
-            { value: 'C', text: 'C' },
-            { value: 'D+', text: 'D+' },
-            { value: 'D', text: 'D' },
-            { value: 'F', text: 'F' },
-            { value: 'I', text: 'I (Incomplete)' },
-            { value: 'S', text: 'S (Satisfied)' },
-            { value: 'U', text: 'U (Unsatisfied)' },
-            { value: 'T', text: 'T (Transfer)' }
-        ];
-        
-        grades.forEach(function(grade) {
-            const option = document.createElement('option');
-            option.value = grade.value;
-            option.textContent = grade.text;
-            gradeSelect.appendChild(option);
+    // Grade points mapping
+    const GRADE_POINTS = {
+        'A': 4.0, 'B+': 3.5, 'B': 3.0, 'C+': 2.5, 'C': 2.0,
+        'D+': 1.5, 'D': 1.0, 'F': 0.0, 'I': null, 'S': null, 'U': null, 'T': null
+    };
+
+    // Calculate and update GPA
+    function calculateGPA() {
+        let totalPoints = 0;
+        let totalCredits = 0;
+
+        courses.forEach(function(course) {
+            const gradePoint = GRADE_POINTS[course.grade];
+            if (gradePoint !== null) {
+                totalPoints += gradePoint * course.credits;
+                totalCredits += course.credits;
+            }
         });
-        
-        const creditInput = document.createElement('input');
-        creditInput.type = 'number';
-        creditInput.className = 'credit-input';
-        creditInput.placeholder = 'Credits';
-        creditInput.min = '1';
-        creditInput.value = '3';
-        
-        const removeButton = document.createElement('button');
-        removeButton.className = 'remove-course';
-        removeButton.innerHTML = '<i class="fas fa-times"></i>';
-        removeButton.addEventListener('click', function() {
-            courseEntry.remove();
-        });
-        
-        courseEntry.appendChild(gradeSelect);
-        courseEntry.appendChild(creditInput);
-        courseEntry.appendChild(removeButton);
-        
-        return courseEntry;
+
+        const gpa = totalCredits > 0 ? (totalPoints / totalCredits) : 0;
+
+        if (gpaValue) gpaValue.textContent = gpa.toFixed(2);
+        if (creditsValue) creditsValue.textContent = totalCredits;
+
+        // Show/hide table and summary
+        if (courses.length > 0) {
+            if (coursesTableContainer) coursesTableContainer.classList.remove('hidden');
+            if (gpaSummary) gpaSummary.classList.remove('hidden');
+            if (gpaActions) gpaActions.classList.remove('hidden');
+        } else {
+            if (coursesTableContainer) coursesTableContainer.classList.add('hidden');
+            if (gpaSummary) gpaSummary.classList.add('hidden');
+            if (gpaActions) gpaActions.classList.add('hidden');
+        }
     }
 
-    // Add course entry buttons
-    if (addCalculatorCourseBtn) {
-        addCalculatorCourseBtn.addEventListener('click', function() {
-            calculatorCoursesList.appendChild(createCourseEntry());
-        });
+    // Render courses table
+    function renderCoursesTable() {
+        if (!coursesTbody) return;
+
+        coursesTbody.innerHTML = courses.map(function(course, index) {
+            return `<tr data-index="${index}">
+                <td>${course.name || 'Unnamed Course'}</td>
+                <td class="text-center">${course.credits}</td>
+                <td class="text-center">${course.grade}</td>
+                <td class="text-center">
+                    <button class="btn-edit" data-index="${index}">Edit</button>
+                    <button class="btn-delete" data-index="${index}">Delete</button>
+                </td>
+            </tr>`;
+        }).join('');
+
+        calculateGPA();
     }
-    
-    if (addSimulatorCourseBtn) {
-        addSimulatorCourseBtn.addEventListener('click', function() {
-            simulatorCoursesList.appendChild(createCourseEntry());
+
+    // Handle spinner buttons for number inputs
+    document.querySelectorAll('.spinner-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const wrapper = this.closest('.number-input-wrapper');
+            const input = wrapper.querySelector('input[type="number"]');
+            const min = parseInt(input.min) || 1;
+            const max = parseInt(input.max) || 4;
+            let value = parseInt(input.value) || min;
+
+            if (this.dataset.action === 'increment' && value < max) {
+                input.value = value + 1;
+            } else if (this.dataset.action === 'decrement' && value > min) {
+                input.value = value - 1;
+            }
+        });
+    });
+
+    // Reset form to add mode
+    function resetToAddMode() {
+        editingIndex = null;
+        inputCourseName.value = '';
+        inputCredits.value = '3';
+        inputGrade.value = 'A';
+        addCourseBtn.textContent = 'Add';
+        addCourseBtn.classList.remove('btn-update');
+    }
+
+    // Add/Update course
+    if (addCourseBtn) {
+        addCourseBtn.addEventListener('click', function() {
+            const name = inputCourseName.value.trim();
+            const credits = parseInt(inputCredits.value);
+            const grade = inputGrade.value;
+
+            if (credits < 1 || credits > 4) {
+                alert('Credits must be between 1 and 4.');
+                return;
+            }
+
+            if (editingIndex !== null) {
+                // Update existing course
+                courses[editingIndex] = { name: name || 'Unnamed Course', credits, grade };
+                resetToAddMode();
+            } else {
+                // Add new course
+                courses.push({ name: name || 'Unnamed Course', credits, grade });
+                inputCourseName.value = '';
+                inputCredits.value = '3';
+                inputGrade.value = 'A';
+            }
+
+            renderCoursesTable();
+            inputCourseName.focus();
         });
     }
 
-    // Remove course buttons
+    // Clear all courses
+    if (clearCoursesBtn) {
+        clearCoursesBtn.addEventListener('click', function() {
+            if (courses.length === 0) return;
+
+            if (confirm('Are you sure you want to clear all courses?')) {
+                courses = [];
+                resetToAddMode();
+                renderCoursesTable();
+            }
+        });
+    }
+
+    // Export to PDF
+    if (exportPdfBtn) {
+        exportPdfBtn.addEventListener('click', function() {
+            if (courses.length === 0) return;
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Calculate totals
+            let totalPoints = 0;
+            let totalCredits = 0;
+            let totalAllCredits = 0;
+
+            courses.forEach(function(course) {
+                const gradePoint = GRADE_POINTS[course.grade];
+                totalAllCredits += course.credits;
+                if (gradePoint !== null) {
+                    totalPoints += gradePoint * course.credits;
+                    totalCredits += course.credits;
+                }
+            });
+
+            const gpa = totalCredits > 0 ? (totalPoints / totalCredits) : 0;
+
+            // Table data - no Course ID, just name, credits, grade
+            const tableData = courses.map(function(course) {
+                return [
+                    course.name.toUpperCase(),
+                    course.credits,
+                    course.grade
+                ];
+            });
+
+            // Add table using autoTable
+            doc.autoTable({
+                body: tableData,
+                startY: 20,
+                theme: 'plain',
+                styles: {
+                    fontSize: 11,
+                    cellPadding: 5,
+                    lineColor: [0, 0, 0],
+                    lineWidth: 0.2,
+                    textColor: [0, 0, 0],
+                },
+                columnStyles: {
+                    0: { cellWidth: 120 },
+                    1: { cellWidth: 25, halign: 'center' },
+                    2: { cellWidth: 25, halign: 'center' }
+                },
+                tableLineColor: [0, 0, 0],
+                tableLineWidth: 0.2,
+            });
+
+            // Draw border around the table
+            const tableStartY = 20;
+            const tableEndY = doc.lastAutoTable.finalY;
+            const tableWidth = 170;
+            const tableStartX = 14;
+            doc.setLineWidth(0.3);
+            doc.rect(tableStartX, tableStartY, tableWidth, tableEndY - tableStartY);
+
+            // Add GPA summary below table - bold italic, centered
+            const finalY = doc.lastAutoTable.finalY + 12;
+            doc.setFontSize(12);
+            doc.setFont('times', 'bolditalic');
+            doc.text(`GPA : ${gpa.toFixed(2)}        Total Credits : ${totalAllCredits}`, 14 + (170 / 2), finalY, { align: 'center' });
+
+            // Save the PDF
+            doc.save('gpa-report.pdf');
+        });
+    }
+
+    // Handle edit and delete clicks
     document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('btn-delete')) {
+            const index = parseInt(e.target.dataset.index);
+
+            // If deleting the course being edited, reset form
+            if (editingIndex === index) {
+                resetToAddMode();
+            } else if (editingIndex !== null && index < editingIndex) {
+                // Adjust editing index if deleting a course before it
+                editingIndex--;
+            }
+
+            courses.splice(index, 1);
+            renderCoursesTable();
+        }
+
+        if (e.target.classList.contains('btn-edit')) {
+            const index = parseInt(e.target.dataset.index);
+            const course = courses[index];
+
+            // Populate input fields with course data
+            inputCourseName.value = course.name;
+            inputCredits.value = course.credits;
+            inputGrade.value = course.grade;
+
+            // Change button to Update mode
+            editingIndex = index;
+            addCourseBtn.textContent = 'Update';
+            addCourseBtn.classList.add('btn-update');
+
+            // Scroll to input and focus
+            inputCourseName.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            inputCourseName.focus();
+        }
+
+        // Handle remove course in simulator
         if (e.target.closest('.remove-course')) {
             e.target.closest('.course-entry').remove();
         }
     });
 
-    // GPA Calculator
-    if (calculateGpaBtn) {
-        calculateGpaBtn.addEventListener('click', async function() {
-            const courses = [];
-            const courseEntries = calculatorCoursesList.querySelectorAll('.course-entry');
-            
-            courseEntries.forEach(function(entry) {
-                const grade = entry.querySelector('.grade-select').value;
-                const credits = parseFloat(entry.querySelector('.credit-input').value);
-                
-                if (!isNaN(credits) && credits > 0) {
-                    courses.push({ grade, credits });
-                }
-            });
-            
-            if (courses.length === 0) {
-                alert('Please add at least one course.');
+    // Render simulator courses table
+    function renderSimulatorCoursesTable() {
+        if (!simCoursesTbody) return;
+
+        simCoursesTbody.innerHTML = simulatorCourses.map(function(course, index) {
+            return `<tr data-index="${index}">
+                <td>${course.name || 'Unnamed Course'}</td>
+                <td class="text-center">${course.credits}</td>
+                <td class="text-center">${course.grade}</td>
+                <td class="text-center">
+                    <button class="btn-edit btn-sim-edit" data-index="${index}">Edit</button>
+                    <button class="btn-delete btn-sim-delete" data-index="${index}">Delete</button>
+                </td>
+            </tr>`;
+        }).join('');
+
+        // Show/hide table
+        if (simulatorCourses.length > 0) {
+            if (simCoursesTableContainer) simCoursesTableContainer.classList.remove('hidden');
+        } else {
+            if (simCoursesTableContainer) simCoursesTableContainer.classList.add('hidden');
+        }
+    }
+
+    // Simulator editing state
+    let simEditingIndex = null;
+
+    // Add simulator course
+    if (addSimulatorCourseBtn) {
+        addSimulatorCourseBtn.addEventListener('click', function() {
+            const name = simCourseName.value.trim();
+            const credits = parseInt(simCredits.value);
+            const grade = simGrade.value;
+
+            if (credits < 1 || credits > 4) {
+                alert('Credits must be between 1 and 4.');
                 return;
             }
-            
-            try {
-                const response = await fetch('/api/calculate-gpa', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ courses })
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok) {
-                    calculatorResult.innerHTML = `
-                        <h3>Your GPA Results</h3>
-                        <div class="gpa-display">${data.gpa.toFixed(2)}</div>
-                        <p>GPA-affecting Credits: ${data.totalCredits}</p>
-                        ${data.nonGpaCredits > 0 ? `<p>Non-GPA Credits (S, T): ${data.nonGpaCredits}</p>` : ''}
-                        <p>Total Earned Credits: ${data.totalEarnedCredits}</p>
-                        <div class="progress-container">
-                            <div class="progress-label">
-                                <span>GPA</span>
-                                <span>${data.gpa.toFixed(2)} / 4.00</span>
-                            </div>
-                            <div class="progress-bar-outer">
-                                <div class="progress-bar-inner" style="width: ${(data.gpa / 4) * 100}%"></div>
-                            </div>
-                        </div>
-                        <div class="insight ${data.gpa >= 3.5 ? 'positive' : data.gpa >= 2.0 ? '' : 'negative'}">
-                            <strong>GPA Insight:</strong> 
-                            ${
-                                data.gpa >= 3.5 ? 'Excellent! You have a strong GPA.' :
-                                data.gpa >= 3.0 ? 'Good job! Your GPA is solid.' :
-                                data.gpa >= 2.5 ? 'Your GPA is average. Consider improving in future courses.' :
-                                data.gpa >= 2.0 ? 'Your GPA is acceptable but needs improvement.' :
-                                'Warning: Your GPA is below the graduation requirement. Focus on improving.'
-                            }
-                        </div>
-                        ${data.nonGpaCredits > 0 ? `
-                        <div class="insight">
-                            <strong>Note:</strong> You have ${data.nonGpaCredits} credits from S/T grades that count toward graduation but don't affect your GPA.
-                        </div>
-                        ` : ''}
-                    `;
-                    calculatorResult.classList.remove('hidden');
-                } else {
-                    throw new Error(data.error || 'Failed to calculate GPA');
-                }
-            } catch (error) {
-                alert(error.message);
+
+            if (simEditingIndex !== null) {
+                // Update existing course
+                simulatorCourses[simEditingIndex] = { name: name || 'Unnamed Course', credits, grade };
+                simEditingIndex = null;
+                addSimulatorCourseBtn.textContent = 'Add';
+                addSimulatorCourseBtn.classList.remove('btn-update');
+            } else {
+                // Add new course
+                simulatorCourses.push({ name: name || 'Unnamed Course', credits, grade });
             }
+
+            // Reset inputs
+            simCourseName.value = '';
+            simCredits.value = '3';
+            simGrade.value = 'A';
+
+            renderSimulatorCoursesTable();
+            simCourseName.focus();
         });
     }
+
+    // Handle simulator course edit and delete
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('btn-sim-delete')) {
+            const index = parseInt(e.target.dataset.index);
+
+            if (simEditingIndex === index) {
+                simEditingIndex = null;
+                addSimulatorCourseBtn.textContent = 'Add';
+                addSimulatorCourseBtn.classList.remove('btn-update');
+                simCourseName.value = '';
+                simCredits.value = '3';
+                simGrade.value = 'A';
+            } else if (simEditingIndex !== null && index < simEditingIndex) {
+                simEditingIndex--;
+            }
+
+            simulatorCourses.splice(index, 1);
+            renderSimulatorCoursesTable();
+        }
+
+        if (e.target.classList.contains('btn-sim-edit')) {
+            const index = parseInt(e.target.dataset.index);
+            const course = simulatorCourses[index];
+
+            simCourseName.value = course.name;
+            simCredits.value = course.credits;
+            simGrade.value = course.grade;
+
+            simEditingIndex = index;
+            addSimulatorCourseBtn.textContent = 'Update';
+            addSimulatorCourseBtn.classList.add('btn-update');
+
+            simCourseName.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            simCourseName.focus();
+        }
+    });
 
     // GPA Goal Planner
     if (planGpaBtn) {
@@ -361,19 +574,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const currentGpa = parseFloat(document.getElementById('sim-current-gpa').value);
             const creditsCompleted = parseInt(document.getElementById('sim-credits-completed').value);
             const calculationType = document.getElementById('calculation-type').value;
-            
-            const futureCourses = [];
-            const courseEntries = simulatorCoursesList.querySelectorAll('.course-entry');
-            
-            courseEntries.forEach(function(entry) {
-                const grade = entry.querySelector('.grade-select').value;
-                const credits = parseFloat(entry.querySelector('.credit-input').value);
-                
-                if (!isNaN(credits) && credits > 0) {
-                    futureCourses.push({ grade, credits });
-                }
+
+            // Use simulatorCourses array instead of DOM queries
+            const futureCourses = simulatorCourses.map(function(course) {
+                return { grade: course.grade, credits: course.credits };
             });
-            
+
             if (futureCourses.length === 0) {
                 alert('Please add at least one future course.');
                 return;
@@ -400,87 +606,38 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Show term GPA results
                         const gpaChange = data.gpaChange;
                         const changeClass = gpaChange > 0 ? 'positive' : gpaChange < 0 ? 'negative' : 'neutral';
-                        const changeIcon = gpaChange > 0 ? 'fa-arrow-up' : gpaChange < 0 ? 'fa-arrow-down' : 'fa-equals';
-                        
+                        const changeText = gpaChange > 0 ? '+' + gpaChange.toFixed(2) : gpaChange < 0 ? gpaChange.toFixed(2) : '±0.00';
+
                         simulatorResult.innerHTML = `
                             <h3>GPA Simulation Results</h3>
-                            <div class="insight positive">
-                                <strong>Term GPA:</strong> 
-                                <div class="gpa-display">${data.termGpa.toFixed(2)}</div>
+                            <div class="result-row">
+                                <span>Term GPA</span>
+                                <strong>${data.termGpa.toFixed(2)}</strong>
                             </div>
-                            
-                            <div class="insight">
-                                <strong>Cumulative GPA:</strong>
-                                <div class="gpa-display">${data.cumulativeGpa.toFixed(2)}</div>
-                                
-                                <div class="gpa-change ${changeClass}">
-                                    <i class="fas ${changeIcon}"></i>
-                                    ${Math.abs(gpaChange).toFixed(2)} points ${gpaChange > 0 ? 'increase' : gpaChange < 0 ? 'decrease' : 'no change'} from current ${currentGpa.toFixed(2)}
-                                </div>
+                            <div class="result-row">
+                                <span>Cumulative GPA</span>
+                                <strong>${data.cumulativeGpa.toFixed(2)}</strong>
                             </div>
-                            
-                            <div class="progress-container">
-                                <div class="progress-label">
-                                    <span>GPA Progress</span>
-                                    <span>${data.cumulativeGpa.toFixed(2)} / 4.00</span>
-                                </div>
-                                <div class="progress-bar-outer">
-                                    <div class="progress-bar-inner" style="width: ${(data.cumulativeGpa / 4) * 100}%"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="insight">
-                                <strong>Credits Summary:</strong>
-                                <p>Term Credits (affecting GPA): <strong>${data.futureCredits}</strong></p>
-                                ${data.futureNonGpaCredits > 0 ? `<p>Term Credits (S, T grades): <strong>${data.futureNonGpaCredits}</strong></p>` : ''}
-                                <p>Total Term Credits: <strong>${data.futureCredits + data.futureNonGpaCredits}</strong></p>
-                                <p>Total Cumulative Credits: <strong>${data.totalEarnedCredits}</strong></p>
+                            <p class="gpa-change-text ${changeClass}">${changeText} from current ${currentGpa.toFixed(2)}</p>
+                            <div class="credits-summary">
+                                <p>Term Credits: <strong>${data.futureCredits + data.futureNonGpaCredits}</strong></p>
+                                <p>Total Credits: <strong>${data.totalEarnedCredits}</strong></p>
                             </div>
                         `;
                     } else {
-                        // Show cumulative GPA results (original behavior)
+                        // Show cumulative GPA results
                         const gpaChange = data.gpaChange;
                         const changeClass = gpaChange > 0 ? 'positive' : gpaChange < 0 ? 'negative' : 'neutral';
-                        const changeIcon = gpaChange > 0 ? 'fa-arrow-up' : gpaChange < 0 ? 'fa-arrow-down' : 'fa-equals';
-                        
+                        const changeText = gpaChange > 0 ? '+' + gpaChange.toFixed(2) : gpaChange < 0 ? gpaChange.toFixed(2) : '±0.00';
+
                         simulatorResult.innerHTML = `
                             <h3>Simulated Future GPA</h3>
                             <div class="gpa-display">${data.newGpa.toFixed(2)}</div>
-                            
-                            <div class="gpa-change ${changeClass}">
-                                <i class="fas ${changeIcon}"></i>
-                                ${Math.abs(gpaChange).toFixed(2)} points ${gpaChange > 0 ? 'increase' : gpaChange < 0 ? 'decrease' : 'no change'}
+                            <p class="gpa-change-text ${changeClass}">${changeText} from current ${currentGpa.toFixed(2)}</p>
+                            <div class="summary-info">
+                                <p>Impact: <strong>${data.gpaImpact.toFixed(1)}%</strong> of overall GPA</p>
+                                ${data.futureNonGpaCredits > 0 ? `<p>Non-GPA Credits (S/T): <strong>${data.futureNonGpaCredits}</strong></p>` : ''}
                             </div>
-                            
-                            <div class="progress-container">
-                                <div class="progress-label">
-                                    <span>Current GPA: ${currentGpa.toFixed(2)}</span>
-                                    <span>Future GPA: ${data.newGpa.toFixed(2)}</span>
-                                </div>
-                                <div class="progress-bar-outer">
-                                    <div class="progress-bar-inner" style="width: ${(data.newGpa / 4) * 100}%"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="insight">
-                                <strong>Impact Analysis:</strong>
-                                <p>These courses will affect <strong>${data.gpaImpact.toFixed(2)}%</strong> of your overall GPA.</p>
-                                ${
-                                    gpaChange > 0.2 ? '<p>These courses will significantly boost your GPA!</p>' :
-                                    gpaChange > 0 ? '<p>These courses will slightly improve your GPA.</p>' :
-                                    gpaChange < -0.2 ? '<p>Warning: These courses will significantly lower your GPA.</p>' :
-                                    gpaChange < 0 ? '<p>These courses will slightly decrease your GPA.</p>' :
-                                    '<p>These courses will maintain your current GPA.</p>'
-                                }
-                            </div>
-                            
-                            ${data.futureNonGpaCredits > 0 ? `
-                            <div class="insight">
-                                <strong>Special Grades:</strong>
-                                <p>Your plan includes ${data.futureNonGpaCredits} credits from S/T grades that will count toward graduation but won't affect your GPA.</p>
-                                <p>Total credits earned will be ${data.totalEarnedCredits}, with ${data.futureCredits} credits affecting GPA.</p>
-                            </div>
-                            ` : ''}
                         `;
                     }
                     
