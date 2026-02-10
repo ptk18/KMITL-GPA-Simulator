@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KMITL GPA Simulator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="./styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 </head>
@@ -143,26 +143,26 @@
                         <label for="current-gpa">Current GPA:</label>
                         <input type="number" id="current-gpa" step="0.01" min="0" max="4.0" value="3.0">
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="credits-completed">Credits Completed (affecting GPA):</label>
                         <input type="number" id="credits-completed" min="0" value="60">
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="total-credits">Total Credits Required for Graduation:</label>
                         <input type="number" id="total-credits" min="1" value="130">
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="target-gpa">Target GPA:</label>
                         <input type="number" id="target-gpa" step="0.01" min="0" max="4.0" value="3.5">
                     </div>
-                    
+
                     <button id="plan-gpa" class="btn-primary">
                         Calculate Required Grades
                     </button>
-                    
+
                     <div id="planner-result" class="result-box hidden">
                         <!-- Results will be shown here -->
                     </div>
@@ -186,17 +186,17 @@
                             <option value="term">Term GPA (Calculate this semester/term only)</option>
                         </select>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="sim-current-gpa">Current GPA:</label>
                         <input type="number" id="sim-current-gpa" step="0.01" min="0" max="4.0" value="3.0">
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="sim-credits-completed">Credits Completed (affecting GPA):</label>
                         <input type="number" id="sim-credits-completed" min="0" value="60">
                     </div>
-                    
+
                     <div class="form-group">
                         <label class="future-courses-label">Future Courses:</label>
                     </div>
@@ -263,7 +263,7 @@
                     <button id="simulate-gpa" class="btn-primary">
                         Simulate Future GPA
                     </button>
-                    
+
                     <div id="simulator-result" class="result-box hidden">
                         <!-- Results will be shown here -->
                     </div>
@@ -275,7 +275,7 @@
                 <div class="card">
                     <h2>About KMITL GPA Simulator</h2>
                     <p>This GPA Simulator was created to help KMITL students plan their academic journey, set realistic GPA goals, and understand how different grade combinations affect their overall GPA.</p>
-                    
+
                     <div class="section-container">
                         <h3>KMITL Grading Scale</h3>
                         <div class="grading-table-container">
@@ -366,7 +366,7 @@
                                     <p>Enter your current courses with grades and credits to calculate your current GPA.</p>
                                 </div>
                             </div>
-                            
+
                             <div class="feature">
                                 <div class="feature-icon">
                                     <i class="fas fa-bullseye"></i>
@@ -376,7 +376,7 @@
                                     <p>Set a target GPA and see what grades you need to achieve it, including whether your goal is feasible.</p>
                                 </div>
                             </div>
-                            
+
                             <div class="feature">
                                 <div class="feature-icon">
                                     <i class="fas fa-chart-line"></i>
@@ -388,7 +388,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="section-container">
                         <h3>GPA Formula</h3>
                         <div class="formula-container">
@@ -406,17 +406,11 @@
         </div>
     </main>
 
-    <!-- <footer>
-        <div class="container">
-            <p>Many students only realize how GPA mechanics work when it's too late.</p>
-        </div>
-    </footer> -->
-
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="./script.js"></script>
     <script>
     // Inline script to ensure validation happens as soon as possible
     // This prevents users from entering invalid values even before the main script loads
-    
+
     document.addEventListener('DOMContentLoaded', function() {
         // GPA input validation - enforce min 0, max 4.0
         const gpaInputs = document.querySelectorAll('input[type="number"][max="4.0"]');
@@ -429,7 +423,7 @@
                 }
             });
         });
-        
+
         // Credit input validation - enforce min 0, max 4
         const creditInputs = document.querySelectorAll('.credit-input');
         creditInputs.forEach(function(input) {
@@ -445,7 +439,7 @@
                 }
             });
         });
-        
+
         // Add validation for dynamically added credit inputs
         document.addEventListener('click', function(e) {
             if (e.target.closest('#add-calculator-course') || e.target.closest('#add-simulator-course')) {
