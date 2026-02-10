@@ -147,7 +147,7 @@ header p {
 .card h3 {
     margin: 20px 0 15px;
     font-size: 1.3rem;
-    color: var(--secondary-color);
+    color: var(--primary-color);
 }
 
 /* Form Elements */
@@ -168,6 +168,7 @@ select {
     border: 1px solid #ddd;
     border-radius: var(--border-radius);
     font-size: 1rem;
+    color: #888;
     transition: var(--transition);
 }
 
@@ -364,7 +365,6 @@ select:focus {
 
 .input-group input[type="number"] {
     width: 100px;
-    text-align: center;
     font-size: 1.1rem;
     -webkit-appearance: none;
     -moz-appearance: textfield;
@@ -392,7 +392,8 @@ select:focus {
     border: none !important;
     border-radius: 0 !important;
     flex: 1;
-    text-align: center;
+    text-align: left;
+    padding-left: 12px;
     font-size: 1rem;
     font-weight: 500;
     background: transparent;
@@ -830,26 +831,30 @@ select:focus {
     padding-top: 20px;
     border-top: 1px solid #eee;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: #555;
 }
 
+.attribution p {
+    margin: 0;
+}
+
 .attribution a {
-    color: var(--primary-color);
+    color: #555;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: normal;
     transition: color 0.2s ease;
 }
 
 .attribution a:hover {
-    color: var(--secondary-color);
+    color: #666;
     text-decoration: underline;
 }
 
 .timestamp {
     font-size: 0.8rem;
     color: #888;
-    margin-top: 5px;
+    margin-top: 2px;
 }
 
 .late-night-message {
@@ -973,34 +978,186 @@ input[type="number"]::-webkit-outer-spin-button {
     z-index: 998;
 }
 
-/* Responsive Design */
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Large Desktop (1200px+) - Base styles apply */
+
+/* Laptop / Small Desktop (992px - 1199px) */
+@media (max-width: 1199px) {
+    .container {
+        max-width: 960px;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .card {
+        padding: 22px;
+    }
+
+    .card h2 {
+        font-size: 1.6rem;
+    }
+}
+
+/* Tablet Landscape (769px - 991px) */
+@media (max-width: 991px) {
+    .container {
+        max-width: 720px;
+        padding: 0 15px;
+    }
+
+    header h1 {
+        font-size: 1.8rem;
+    }
+
+    header p {
+        font-size: 0.9rem;
+    }
+
+    .tabs {
+        flex-wrap: wrap;
+    }
+
+    .tab-button {
+        flex: 1 1 auto;
+        min-width: 120px;
+        padding: 12px 10px;
+        font-size: 0.9rem;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .card h2 {
+        font-size: 1.5rem;
+    }
+
+    /* Course Input Row - 2x2 grid on tablet landscape */
+    .course-input-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .course-input-row .input-group:first-child {
+        grid-column: 1 / -1;
+    }
+
+    /* Table adjustments */
+    .courses-table th,
+    .courses-table td {
+        padding: 10px 12px;
+        font-size: 0.95rem;
+    }
+
+    .grading-table {
+        font-size: 0.9rem;
+    }
+
+    .feature-container {
+        gap: 15px;
+    }
+
+    .feature {
+        padding: 15px;
+    }
+
+    .result-row {
+        padding: 10px 0;
+        font-size: 1rem;
+    }
+
+    .result-row strong {
+        font-size: 1.2rem;
+    }
+}
+
+/* Tablet Portrait (481px - 768px) */
 @media (max-width: 768px) {
     .mobile-menu-toggle {
         display: flex;
         align-items: center;
         justify-content: center;
     }
-    
+
     .mobile-sidebar {
         display: block;
     }
-    
+
     .tabs {
         display: none;
     }
-    
-    .course-entry {
-        flex-wrap: wrap;
-        gap: 10px;
+
+    .container {
+        padding: 0 15px;
+    }
+
+    header {
+        padding: 12px 0;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    header p {
+        font-size: 0.85rem;
+    }
+
+    .card {
+        padding: 18px;
+        margin-bottom: 15px;
+    }
+
+    .card h2 {
+        font-size: 1.4rem;
+        margin-bottom: 12px;
+    }
+
+    .card h3 {
+        font-size: 1.15rem;
+    }
+
+    .instructions {
         padding: 12px;
+        margin-bottom: 15px;
     }
 
-    .course-entry .input-group {
-        flex: 1;
-        min-width: 100px;
+    .instructions p {
+        font-size: 0.9rem;
     }
 
-    .course-entry select {
+    /* Course Input Row - Stack on tablet portrait */
+    .course-input-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .course-input-row .input-group:first-child {
+        grid-column: 1 / -1;
+    }
+
+    .input-group label {
+        font-size: 0.85rem;
+    }
+
+    .btn-add {
+        padding: 10px 20px;
+    }
+
+    /* Number input wrapper on tablet */
+    .number-input-wrapper {
+        width: 100%;
+        height: 40px;
+    }
+
+    .input-group select {
         width: 100%;
     }
 
@@ -1009,32 +1166,28 @@ input[type="number"]::-webkit-outer-spin-button {
         width: 100%;
         margin-right: 0;
         margin-bottom: 10px;
+        padding: 12px 20px;
     }
 
-    /* Course Input Row Mobile */
-    .course-input-row {
-        flex-direction: column;
-        align-items: stretch;
+    /* GPA Display */
+    .gpa-display {
+        font-size: 1.8rem;
     }
 
-    .input-group {
-        width: 100%;
+    /* Courses Table */
+    .courses-table-container {
+        overflow-x: auto;
+        margin: 0 -18px;
+        padding: 0 18px;
     }
 
-    .input-group input[type="text"],
-    .input-group input[type="number"],
-    .input-group select {
-        width: 100%;
+    .courses-table {
+        min-width: 500px;
     }
 
-    .btn-add {
-        width: 100%;
-    }
-
-    /* Courses Table Mobile */
     .courses-table th,
     .courses-table td {
-        padding: 8px 10px;
+        padding: 10px 12px;
         font-size: 0.9rem;
     }
 
@@ -1042,8 +1195,14 @@ input[type="number"]::-webkit-outer-spin-button {
     .btn-delete,
     .btn-save,
     .btn-cancel {
-        padding: 5px 8px;
-        font-size: 0.75rem;
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+
+    .gpa-summary {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
     }
 
     .gpa-actions {
@@ -1055,6 +1214,310 @@ input[type="number"]::-webkit-outer-spin-button {
     .btn-clear {
         width: 100%;
         justify-content: center;
+    }
+
+    /* Form elements */
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        font-size: 0.9rem;
+    }
+
+    .form-group input,
+    .form-group select {
+        padding: 10px 12px;
+        font-size: 0.95rem;
+    }
+
+    /* Result boxes */
+    .result-row {
+        padding: 10px 0;
+        font-size: 0.95rem;
+    }
+
+    .result-row strong {
+        font-size: 1.15rem;
+    }
+
+    .result-explanation {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+
+    /* About page */
+    .grading-table-container {
+        overflow-x: auto;
+    }
+
+    .feature-container {
+        flex-direction: column;
+    }
+
+    .feature {
+        flex-direction: row;
+        text-align: left;
+    }
+
+    .feature-icon {
+        margin-bottom: 0;
+        margin-right: 15px;
+    }
+
+    .formula-container {
+        padding: 15px;
+    }
+
+    .formula-container p {
+        font-size: 0.9rem;
+    }
+
+    .attribution {
+        margin-top: 30px;
+        padding-top: 15px;
+    }
+}
+
+/* Mobile (up to 480px) */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 12px;
+    }
+
+    header {
+        padding: 10px 0;
+        margin-bottom: 15px;
+    }
+
+    header h1 {
+        font-size: 1.3rem;
+    }
+
+    header p {
+        font-size: 0.8rem;
+    }
+
+    .card {
+        padding: 15px;
+        border-radius: 6px;
+    }
+
+    .card h2 {
+        font-size: 1.25rem;
+        margin-bottom: 10px;
+    }
+
+    .card h3 {
+        font-size: 1.1rem;
+    }
+
+    .card p {
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+
+    .instructions {
+        padding: 10px;
+        margin-bottom: 12px;
+    }
+
+    .instructions p {
+        font-size: 0.85rem;
+        margin-bottom: 6px;
+    }
+
+    /* Course Input Row - Full stack on mobile */
+    .course-input-row {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .course-input-row .input-group {
+        width: 100%;
+    }
+
+    .course-input-row .input-group:first-child {
+        grid-column: auto;
+    }
+
+    .input-group {
+        width: 100%;
+    }
+
+    .input-group label {
+        font-size: 0.8rem;
+        margin-bottom: 4px;
+    }
+
+    .input-group input,
+    .input-group select {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    .btn-add {
+        width: 100%;
+        padding: 12px;
+    }
+
+    /* Number input wrapper on mobile */
+    .number-input-wrapper {
+        width: 100%;
+        height: 42px;
+    }
+
+    .input-group select {
+        width: 100%;
+    }
+
+    /* GPA Display on mobile */
+    .gpa-display {
+        font-size: 1.6rem;
+    }
+
+    /* Table - Card-like layout for very small screens */
+    .courses-table {
+        min-width: 400px;
+    }
+
+    .courses-table th,
+    .courses-table td {
+        padding: 8px;
+        font-size: 0.8rem;
+    }
+
+    .courses-table th:first-child,
+    .courses-table td:first-child {
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .btn-edit,
+    .btn-delete,
+    .btn-save,
+    .btn-cancel {
+        padding: 5px 8px;
+        font-size: 0.7rem;
+    }
+
+    .gpa-summary {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        padding: 12px 16px;
+        font-size: 0.95rem;
+    }
+
+    .btn-export,
+    .btn-clear {
+        padding: 10px 15px;
+        font-size: 0.85rem;
+    }
+
+    /* Form elements */
+    .form-group {
+        margin-bottom: 12px;
+    }
+
+    .form-group label {
+        font-size: 0.85rem;
+    }
+
+    .form-group input,
+    .form-group select {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    /* Result boxes */
+    .result-box h3 {
+        font-size: 1.1rem;
+    }
+
+    .result-row {
+        padding: 8px 0;
+        font-size: 0.9rem;
+    }
+
+    .result-row strong {
+        font-size: 1.1rem;
+    }
+
+    .result-explanation {
+        padding: 10px;
+        font-size: 0.85rem;
+        line-height: 1.5;
+    }
+
+    /* About page */
+    .section-container {
+        margin-bottom: 20px;
+    }
+
+    .grading-table {
+        font-size: 0.85rem;
+    }
+
+    .grading-table th,
+    .grading-table td {
+        padding: 8px 10px;
+    }
+
+    .feature {
+        padding: 12px;
+    }
+
+    .feature-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+
+    .feature-content h4 {
+        font-size: 1rem;
+    }
+
+    .feature-content p {
+        font-size: 0.85rem;
+    }
+
+    .formula-container {
+        padding: 12px;
+    }
+
+    .formula-container p {
+        font-size: 0.85rem;
+    }
+
+    .reference-link {
+        font-size: 0.8rem;
+    }
+
+    .attribution {
+        margin-top: 25px;
+        padding-top: 12px;
+        font-size: 0.75rem;
+    }
+
+    .timestamp {
+        font-size: 0.7rem;
+    }
+
+    /* Mobile sidebar adjustments */
+    .mobile-sidebar {
+        width: 260px;
+    }
+
+    .mobile-tab-button {
+        padding: 12px;
+        font-size: 0.9rem;
     }
 }
 
@@ -1109,4 +1572,40 @@ input[type="number"]::-webkit-outer-spin-button {
 .credits-summary p {
     margin: 5px 0;
     color: #555;
+}
+
+/* Text utility classes */
+.text-success {
+    color: #28a745 !important;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+/* Result explanation text */
+.result-explanation {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    color: #555;
+    line-height: 1.6;
+    text-align: center;
+}
+
+/* Reference link */
+.reference-link {
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.reference-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.reference-link a:hover {
+    text-decoration: underline;
 }

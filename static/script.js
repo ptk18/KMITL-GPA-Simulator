@@ -501,61 +501,39 @@ document.addEventListener('DOMContentLoaded', function() {
                 const data = await response.json();
                 
                 if (response.ok) {
-                    let combinationsHtml = '';
-                    
-                    if (data.gradeCombinations && data.gradeCombinations.length > 0) {
-                        combinationsHtml = `
-                            <h4>Possible Grade Combinations</h4>
-                            <ul>
-                                ${data.gradeCombinations.map(function(combo) { 
-                                    return `<li>${combo.description}</li>`;
-                                }).join('')}
-                            </ul>
-                        `;
-                    }
-                    
                     const isPossible = data.feasibility === 'Possible';
-                    
+                    const requiredGpa = data.requiredGpa.toFixed(2);
+
+                    let explanationText = '';
+                    if (isPossible) {
+                        if (requiredGpa >= 3.5) {
+                            explanationText = `To reach your target, you need to average <strong>${requiredGpa}</strong> (mostly A grades) in your remaining <strong>${remainingCredits}</strong> credits.`;
+                        } else if (requiredGpa >= 3.0) {
+                            explanationText = `To reach your target, you need to average <strong>${requiredGpa}</strong> (B+ to A range) in your remaining <strong>${remainingCredits}</strong> credits.`;
+                        } else if (requiredGpa >= 2.5) {
+                            explanationText = `To reach your target, you need to average <strong>${requiredGpa}</strong> (B to B+ range) in your remaining <strong>${remainingCredits}</strong> credits.`;
+                        } else {
+                            explanationText = `To reach your target, you need to average <strong>${requiredGpa}</strong> in your remaining <strong>${remainingCredits}</strong> credits. This is achievable with moderate effort.`;
+                        }
+                    } else {
+                        explanationText = `Your target GPA of <strong>${targetGpa.toFixed(2)}</strong> requires an average above 4.0 in your remaining credits, which is not possible.`;
+                    }
+
                     plannerResult.innerHTML = `
                         <h3>GPA Goal Analysis</h3>
-                        <div class="insight ${isPossible ? '' : 'negative'}">
-                            <strong>Feasibility:</strong> ${data.feasibility}
-                            ${
-                                isPossible 
-                                    ? `<p>You need to maintain an average of <strong>${data.requiredGpa.toFixed(2)}</strong> in your remaining ${remainingCredits} credits.</p>` 
-                                    : `<p>Your target GPA is not mathematically possible with regular credits.</p>`
-                            }
+                        <div class="result-row">
+                            <span>Target GPA</span>
+                            <strong>${targetGpa.toFixed(2)}</strong>
                         </div>
-                        
-                        <div class="progress-container">
-                            <div class="progress-label">
-                                <span>GPA Flexibility</span>
-                                <span>${data.gradeFlexibility.toFixed(2)}%</span>
-                            </div>
-                            <div class="progress-bar-outer">
-                                <div class="progress-bar-inner" style="width: ${data.gradeFlexibility}%"></div>
-                            </div>
+                        <div class="result-row">
+                            <span>Required Average</span>
+                            <strong class="${isPossible ? '' : 'text-danger'}">${requiredGpa}</strong>
                         </div>
-                        
-                        <p>Your remaining ${remainingCredits} credits affect <strong>${data.gradeImpact.toFixed(2)}%</strong> of your final GPA.</p>
-                        
-                        ${combinationsHtml}
-                        
-                        ${
-                            !isPossible && data.extraCreditsNeeded
-                                ? `
-                                    <div class="insight warning">
-                                        <strong>Extra Credit Strategy:</strong>
-                                        <p>${data.extraCreditStrategy}</p>
-                                    </div>
-                                `
-                                : ''
-                        }
-                        
-                        <div class="insight">
-                            <strong>Note about Special Grades:</strong>
-                            <p>Remember that I, S, U, and T grades don't affect your GPA calculation. S and T grades count for credits but not GPA points.</p>
+                        <div class="result-row">
+                            <span>Status</span>
+                            <strong class="${isPossible ? 'text-success' : 'text-danger'}">${isPossible ? 'Achievable' : 'Not Possible'}</strong>
                         </div>
+                        <p class="result-explanation">${explanationText}</p>
                     `;
                     
                     plannerResult.classList.remove('hidden');
@@ -606,38 +584,61 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Show term GPA results
                         const gpaChange = data.gpaChange;
                         const changeClass = gpaChange > 0 ? 'positive' : gpaChange < 0 ? 'negative' : 'neutral';
-                        const changeText = gpaChange > 0 ? '+' + gpaChange.toFixed(2) : gpaChange < 0 ? gpaChange.toFixed(2) : '±0.00';
+
+                        let explanationText = '';
+                        if (gpaChange > 0.1) {
+                            explanationText = `These courses will <strong>raise</strong> your cumulative GPA by <strong>${gpaChange.toFixed(2)}</strong> points.`;
+                        } else if (gpaChange < -0.1) {
+                            explanationText = `These courses will <strong>lower</strong> your cumulative GPA by <strong>${Math.abs(gpaChange).toFixed(2)}</strong> points.`;
+                        } else {
+                            explanationText = `These courses will have <strong>minimal impact</strong> on your cumulative GPA.`;
+                        }
 
                         simulatorResult.innerHTML = `
-                            <h3>GPA Simulation Results</h3>
+                            <h3>Simulation Results</h3>
                             <div class="result-row">
-                                <span>Term GPA</span>
+                                <span>This Term's GPA</span>
                                 <strong>${data.termGpa.toFixed(2)}</strong>
                             </div>
                             <div class="result-row">
-                                <span>Cumulative GPA</span>
-                                <strong>${data.cumulativeGpa.toFixed(2)}</strong>
+                                <span>New Cumulative GPA</span>
+                                <strong class="${changeClass}">${data.cumulativeGpa.toFixed(2)}</strong>
                             </div>
-                            <p class="gpa-change-text ${changeClass}">${changeText} from current ${currentGpa.toFixed(2)}</p>
-                            <div class="credits-summary">
-                                <p>Term Credits: <strong>${data.futureCredits + data.futureNonGpaCredits}</strong></p>
-                                <p>Total Credits: <strong>${data.totalEarnedCredits}</strong></p>
+                            <div class="result-row">
+                                <span>Current GPA</span>
+                                <strong>${currentGpa.toFixed(2)}</strong>
                             </div>
+                            <p class="result-explanation">${explanationText}</p>
                         `;
                     } else {
                         // Show cumulative GPA results
                         const gpaChange = data.gpaChange;
                         const changeClass = gpaChange > 0 ? 'positive' : gpaChange < 0 ? 'negative' : 'neutral';
-                        const changeText = gpaChange > 0 ? '+' + gpaChange.toFixed(2) : gpaChange < 0 ? gpaChange.toFixed(2) : '±0.00';
+
+                        let explanationText = '';
+                        if (gpaChange > 0.1) {
+                            explanationText = `After completing these courses, your GPA will <strong>increase</strong> from <strong>${currentGpa.toFixed(2)}</strong> to <strong>${data.newGpa.toFixed(2)}</strong>.`;
+                        } else if (gpaChange < -0.1) {
+                            explanationText = `After completing these courses, your GPA will <strong>decrease</strong> from <strong>${currentGpa.toFixed(2)}</strong> to <strong>${data.newGpa.toFixed(2)}</strong>.`;
+                        } else {
+                            explanationText = `These courses will <strong>maintain</strong> your current GPA at around <strong>${data.newGpa.toFixed(2)}</strong>.`;
+                        }
 
                         simulatorResult.innerHTML = `
-                            <h3>Simulated Future GPA</h3>
-                            <div class="gpa-display">${data.newGpa.toFixed(2)}</div>
-                            <p class="gpa-change-text ${changeClass}">${changeText} from current ${currentGpa.toFixed(2)}</p>
-                            <div class="summary-info">
-                                <p>Impact: <strong>${data.gpaImpact.toFixed(1)}%</strong> of overall GPA</p>
-                                ${data.futureNonGpaCredits > 0 ? `<p>Non-GPA Credits (S/T): <strong>${data.futureNonGpaCredits}</strong></p>` : ''}
+                            <h3>Simulation Results</h3>
+                            <div class="result-row">
+                                <span>Current GPA</span>
+                                <strong>${currentGpa.toFixed(2)}</strong>
                             </div>
+                            <div class="result-row">
+                                <span>Projected GPA</span>
+                                <strong class="${changeClass}">${data.newGpa.toFixed(2)}</strong>
+                            </div>
+                            <div class="result-row">
+                                <span>Change</span>
+                                <strong class="${changeClass}">${gpaChange >= 0 ? '+' : ''}${gpaChange.toFixed(2)}</strong>
+                            </div>
+                            <p class="result-explanation">${explanationText}</p>
                         `;
                     }
                     
