@@ -48,18 +48,36 @@ document.addEventListener('DOMContentLoaded', function() {
     let simulatorCourses = [];
     
     // Mobile Menu Toggle
-    if (mobileMenuToggle) {
-        mobileMenuToggle.addEventListener('click', function() {
-            mobileSidebar.classList.toggle('open');
-            overlay.style.display = mobileSidebar.classList.contains('open') ? 'block' : 'none';
-        });
+    function toggleMobileMenu() {
+        const isOpen = mobileSidebar.classList.toggle('open');
+        overlay.style.display = isOpen ? 'block' : 'none';
+        // Toggle button style and icon
+        mobileMenuToggle.classList.toggle('menu-open', isOpen);
+        const icon = mobileMenuToggle.querySelector('i');
+        if (icon) {
+            icon.classList.toggle('fa-bars', !isOpen);
+            icon.classList.toggle('fa-times', isOpen);
+        }
     }
-    
+
+    function closeMobileMenu() {
+        mobileSidebar.classList.remove('open');
+        overlay.style.display = 'none';
+        // Reset button style and icon
+        mobileMenuToggle.classList.remove('menu-open');
+        const icon = mobileMenuToggle.querySelector('i');
+        if (icon) {
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+        }
+    }
+
+    if (mobileMenuToggle) {
+        mobileMenuToggle.addEventListener('click', toggleMobileMenu);
+    }
+
     if (overlay) {
-        overlay.addEventListener('click', function() {
-            mobileSidebar.classList.remove('open');
-            overlay.style.display = 'none';
-        });
+        overlay.addEventListener('click', closeMobileMenu);
     }
 
     // Initialize Tab Navigation
@@ -124,6 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
     mobileTabButtons.forEach(function(button) {
         button.addEventListener('click', function() {
             switchTab(this.dataset.tab);
+            closeMobileMenu();
         });
     });
 
