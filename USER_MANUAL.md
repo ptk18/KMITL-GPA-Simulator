@@ -176,19 +176,9 @@ Save your GPA as a PDF file.
 3. Click **Export as PDF**
 4. The PDF downloads to your device
 
-### PDF Includes
-
-- Your name (if entered)
-- All courses with grades and credits
-- Your GPA
-- Total credits
-- Export date
-
 ---
 
-## Grading Scale Reference
-
-KMITL uses this grading scale:
+## Grading Scale 
 
 ### Letter Grades
 
@@ -255,7 +245,7 @@ This app works on phones and tablets.
 
 ## Need Help?
 
-If you have problems or further contribution:
+If you have problems or for further contribution:
 
 - Contact the developer at phyoethikhine143@gmail.com
 
